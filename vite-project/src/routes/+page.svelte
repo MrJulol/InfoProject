@@ -33,7 +33,7 @@ function getCookie(name: string) {
     }
 
     try {
-      const response = await fetch('/users/login', {
+      const response = await fetch('http://localhost:3500/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
