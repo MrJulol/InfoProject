@@ -1,9 +1,30 @@
-<script>
+<script lang="ts">
   let username = '';
   let password = '';
   let rePassword = '';
   let email = '';
   let showModal = false; // State to control modal visibility
+
+  // Function to set a cookie
+  function setCookie(name: string, value: string, days: number) {
+  const date = new Date();
+  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+  const expires = `expires=${date.toUTCString()}`;
+  const encodedValue = encodeURIComponent(value); // Encode the value to handle special characters
+  document.cookie = `${name}=${encodedValue}; ${expires}; path=/; Secure; SameSite=Strict`;
+}
+
+// Function to get a cookie
+function getCookie(name: string) {
+  const cookies = document.cookie.split(';');
+  for (let cookie of cookies) {
+    const [key, value] = cookie.trim().split('=');
+    if (key === name) {
+      return decodeURIComponent(value); // Decode the value to handle special characters
+    }
+  }
+  return null;
+}
 
   async function login_click() {
     if (!username || !password) {
@@ -12,7 +33,7 @@
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:3500/users/login', {
+      const response = await fetch('/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,19 +48,22 @@
 
       const data = await response.json();
       console.log('Login successful:', data);
+
+      // Set a cookie with the token (or any other session data)
+      setCookie('authToken', data.token, 7); // Cookie expires in 7 days
     } catch (error) {
       console.error('Error during login:', error);
     }
   }
 
   async function register_click() {
-    if (!username || !password || !email) {
-      console.error('Please fill in all fields.');
+    if (!username || !password || !email || password !== rePassword) {
+      console.error('Please fill in all fields and ensure passwords match.');
       return;
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:3500/users/register', {
+      const response = await fetch('/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,6 +78,10 @@
 
       const data = await response.json();
       console.log('Registration successful:', data);
+
+      // Set a cookie with the token (or any other session data)
+      setCookie('authToken', data.token, 7); // Cookie expires in 7 days
+
       closeModal(); // Close the modal after successful registration
     } catch (error) {
       console.error('Error during registration:', error);
@@ -202,7 +230,7 @@
   .close-btn:hover {
     background-color: #999;
   }
-</style>
+</style>XW
 
 <div class="navbar">
   <h1>Ride-Share</h1>
@@ -235,4 +263,3 @@
 <footer>
   <p>&copy; 2025 Ride-Share. All rights reserved.</p>
 </footer>
-
