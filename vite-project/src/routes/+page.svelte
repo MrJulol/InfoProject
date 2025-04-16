@@ -67,7 +67,7 @@ function getCookie(name: string) {
     }
 
     try {
-      const response = await fetch('/users/register', {
+      const response = await fetch('http:loclahost:3500/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
