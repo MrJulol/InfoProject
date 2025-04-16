@@ -23,6 +23,7 @@
 	},
 	"dependencies": {
 		"flowbite-svelte": "^0.48.6",
+		"framework7-svelte": "^8.3.4",
 		"leaflet": "^1.9.4",
 		"maplibre-gl": "^5.3.0",
 		"svelte-leaflet": "^0.2.0"

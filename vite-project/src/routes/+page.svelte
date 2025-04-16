@@ -56,6 +56,10 @@ function getCookie(name: string) {
     }
   }
 
+  function showErrorPopup(message: string) {
+    alert(message); // Simple implementation using alert
+  }
+
   async function register_click() {
     if (!username || !password || !email || password !== rePassword) {
       console.error('Please fill in all fields and ensure passwords match.');
@@ -73,6 +77,8 @@ function getCookie(name: string) {
 
       if (!response.ok) {
         console.error('Registration failed:', response.statusText);
+        
+        showErrorPopup('Registration failed. Please try again.'); // Show error popup
         return;
       }
 
@@ -230,7 +236,7 @@ function getCookie(name: string) {
   .close-btn:hover {
     background-color: #999;
   }
-</style>XW
+</style>
 
 <div class="navbar">
   <h1>Ride-Share</h1>
