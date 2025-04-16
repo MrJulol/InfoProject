@@ -78,7 +78,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
 
   if (!username || !password) {
     return res
@@ -89,11 +89,16 @@ router.post("/register", async (req, res) => {
   let connection;
   try {
     connection = await pool.getConnection();
-    const result = await connection.query(
-      "INSERT INTO t_user (name, password) VALUES (?, ?)",
-      [username, password]
+    await connection.query(
+      "INSERT INTO t_user (name, password, email) VALUES (?, ?, ?)",
+      [username, password, email]
     );
-
+    const token = authenticate.createToken(username, password);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Set to true if using HTTPS
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     console.error("Error during registration:", err);
@@ -115,27 +120,6 @@ router.post("/logout", authenticate.authenticateUser, (req, res) => {
     secure: process.env.NODE_ENV === "production", // Set to true if using HTTPS
   });
   res.json({ message: "Logout successful" });
-});
-
-router.get("/check", authenticate.authenticateUser, (req, res) => {
-  // Check if the user is authenticated
-  if (req.user) {
-    res.json({ message: "User is authenticated", user: req.user });
-  } else {
-    res.status(401).json({ error: "User is not authenticated" });
-  }
-});
-
-router.get("/checkToken", (req, res) => {
-  // Check if the token is valid
-  if (
-    req.cookies["token"] &&
-    authenticate.authenticateToken(req.cookies["token"])
-  ) {
-    res.json({ message: "Token is valid" });
-  } else {
-    res.status(401).json({ error: "Token is invalid" });
-  }
 });
 
 module.exports = router;
