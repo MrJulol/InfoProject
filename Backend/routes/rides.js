@@ -75,7 +75,7 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
   let connection;
   try {
     connection = await pool.getConnection();
-    const { startPlace, finishPlace, driver } = req.body;
+    const { startPlace, finishPlace, driver, start } = req.body;
 
     const existingRides = await connection.query(
       "SELECT * FROM t_rides WHERE driver = ? AND status = 'open'",
@@ -87,9 +87,38 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
       });
     }
 
+    const existingStartPlace = await connection.query(
+      "SELECT * FROM t_places WHERE name = ?",
+      [startPlace]
+    );
+    if (existingStartPlace.length === 0) {
+      connection.query("INSERT INTO t_places (name) VALUES (?)", [startPlace]);
+    }
+    const existingFinishPlace = await connection.query(
+      "SELECT * FROM t_places WHERE name = ?",
+      [finishPlace]
+    );
+    if (existingFinishPlace.length === 0) {
+      connection.query("INSERT INTO t_places (name) VALUES (?)", [finishPlace]);
+    }
+    const startPlaceId =
+      existingStartPlace[0]?.id ||
+      (
+        await connection.query("SELECT id FROM t_places WHERE name = ?", [
+          startPlace,
+        ])
+      )[0].id;
+    const finishPlaceId =
+      existingFinishPlace[0]?.id ||
+      (
+        await connection.query("SELECT id FROM t_places WHERE name = ?", [
+          finishPlace,
+        ])
+      )[0].id;
+
     const result = await connection.query(
       "INSERT INTO t_rides (status, startPlace, finishPlace, start, driver) VALUES ( ?, ?, ?, ?, ?)",
-      ["open", startPlace, finishPlace, new Date(), driver]
+      ["open", startPlaceId, finishPlaceId, start, driver]
     );
 
     res.status(201).json({
