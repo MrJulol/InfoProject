@@ -77,6 +77,16 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
     connection = await pool.getConnection();
     const { startPlace, finishPlace, driver } = req.body;
 
+    const existingRides = await connection.query(
+      "SELECT * FROM t_rides WHERE driver = ? AND status = 'open'",
+      [driver]
+    );
+    if (existingRides.length > 0) {
+      return res.status(400).json({
+        error: "Driver already has an open ride",
+      });
+    }
+
     const result = await connection.query(
       "INSERT INTO t_rides (status, startPlace, finishPlace, start, driver) VALUES ( ?, ?, ?, ?, ?)",
       ["open", startPlace, finishPlace, new Date(), driver]
@@ -100,7 +110,7 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
   }
 });
 
-router.post("/update", authenticate.authenticateUser, async (req, res) => {
+router.put("/update", authenticate.authenticateUser, async (req, res) => {
   let connection;
   try {
     connection = await pool.getConnection();
@@ -130,21 +140,22 @@ router.post("/update", authenticate.authenticateUser, async (req, res) => {
   }
 });
 
-router.post("/delete", authenticate.authenticateUser, async (req, res) => {
+router.post("/finish", authenticate.authenticateUser, async (req, res) => {
   let connection;
   try {
     connection = await pool.getConnection();
     const { rideId } = req.body;
 
-    const result = await connection.query("DELETE FROM t_rides WHERE id = ?", [
-      rideId,
-    ]);
+    const result = await connection.query(
+      "UPDATE t_rides SET status = ?, end = ? WHERE ID = ?",
+      ["archived", new Date(), rideId]
+    );
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Ride not found" });
     }
 
-    res.json({ message: "Ride deleted successfully" });
+    res.json({ message: "Ride finished successfully" });
   } catch (err) {
     console.error("Error deleting ride:", err);
     res.status(500).json({ error: "Internal Server Error" });
