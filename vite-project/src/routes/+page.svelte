@@ -56,7 +56,8 @@
             <div class="flex justify-between items-center">
               <div>
                 <p class="text-lg font-semibold text-gray-700">{ride.StartPlaceName} → {ride.FinishPlaceName}</p>
-                <p class="text-sm text-gray-500">{ride.date} — {ride.Seats} Plätze</p>
+                <p class="text-sm text-gray-500">{ride.StartTime} — {ride.Seats} Plätze</p>
+                <p class="text-sm text-gray-500">{ride.Driver}</p>
               </div>
             </div>
           </div>
