@@ -1,12 +1,21 @@
 <script lang="ts">
     // Simulated rides data (replace with backend call later)
-    let rides = [
-      { start: 'Berlin', destination: 'Munich', date: '2025-04-25', seats: 3},
-      { start: 'Hamburg', destination: 'Berlin', date: '2025-04-26', seats: 2},
-      { start: 'Cologne', destination: 'Frankfurt', date: '2025-04-27', seats: 1},
-      { start: 'Berlin', destination: 'Leipzig', date: '2025-04-24', seats: 4},
-    ];
+
+    let fetchrides = async () => {
+      try {
+        const response = await fetch("http://localhost:3500/rides/open");
+        const data = await response.json();
+        return data;
+      } catch (err) {
+        console.error("Error fetching rides:", err);
+        return [];
+      }
+    };
   
+    let rides: any[] = [];
+    fetchrides().then((data) => {
+      rides = data;
+    });
     let filterStart = '';
     let filterDest = '';
   
