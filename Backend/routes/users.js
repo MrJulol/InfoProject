@@ -38,7 +38,7 @@ router.post("/login", async (req, res) => {
   try {
     connection = await pool.getConnection();
     const rows = await connection.query(
-      "SELECT name FROM t_user WHERE name = ? AND password = ?",
+      "SELECT ID, name FROM t_user WHERE name = ? AND password = ?",
       [username, password]
     );
 
@@ -53,6 +53,10 @@ router.post("/login", async (req, res) => {
       } else {
         token = authenticate.createToken(rows[0].name, password);
       }
+      connection.query("UPDATE t_user SET token = ? WHERE ID = ?", [
+        token,
+        rows[0].ID,
+      ]);
       // Set the token in the cookie
       res.cookie("token", token, {
         httpOnly: true,
@@ -89,11 +93,11 @@ router.post("/register", async (req, res) => {
   let connection;
   try {
     connection = await pool.getConnection();
-    await connection.query(
-      "INSERT INTO t_user (name, password, email) VALUES (?, ?, ?)",
-      [username, password, email]
-    );
     const token = authenticate.createToken(username, password);
+    await connection.query(
+      "INSERT INTO t_user (name, password, email, token) VALUES (?, ?, ?, ?)",
+      [username, password, email, token]
+    );
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // Set to true if using HTTPS
@@ -121,5 +125,7 @@ router.post("/logout", authenticate.authenticateUser, (req, res) => {
   });
   res.json({ message: "Logout successful" });
 });
+
+router.get("/tok")
 
 module.exports = router;

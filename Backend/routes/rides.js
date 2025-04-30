@@ -25,7 +25,7 @@ router.get("/", authenticate.authenticateUser, async (req, res, next) => {
   }
 });
 
-router.get("/open", authenticate.authenticateUser, async (req, res) => {
+router.get("/open", async (req, res) => {
   let connection;
   try {
     connection = await pool.getConnection();
@@ -139,15 +139,15 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
   }
 });
 
-router.put("/update", authenticate.authenticateUser, async (req, res) => {
+router.put("/reopen", authenticate.authenticateUser, async (req, res) => {
   let connection;
   try {
     connection = await pool.getConnection();
-    const { rideId, status } = req.body;
+    const { rideId } = req.body;
 
     const result = await connection.query(
       "UPDATE t_rides SET status = ? WHERE id = ?",
-      [status, rideId]
+      ["open", rideId]
     );
 
     if (result.affectedRows === 0) {

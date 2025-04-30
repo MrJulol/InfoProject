@@ -1,6 +1,14 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
     // Simulated rides data (replace with backend call later)
 
+    onMount(() => {
+      fetchrides().then((data) => {
+        rides = data;
+        console.log("Fetched rides:", rides);
+      });
+    });
     let fetchrides = async () => {
       try {
         const response = await fetch("http://localhost:3500/rides/open");
@@ -13,17 +21,14 @@
     };
   
     let rides: any[] = [];
-    fetchrides().then((data) => {
-      rides = data;
-    });
     let filterStart = '';
     let filterDest = '';
   
     // Reactive filtered rides
-    $: filteredRides = rides.filter((ride) =>
-      ride.start.toLowerCase().includes(filterStart.toLowerCase()) &&
-      ride.destination.toLowerCase().includes(filterDest.toLowerCase())
-    );
+    // $: filteredRides = rides.filter((ride) =>
+    //   ride.startPlace.toLowerCase().includes(filterStart.toLowerCase()) &&
+    //   ride.finishPlace.toLowerCase().includes(filterDest.toLowerCase())
+    // );
   </script>
   
   <div class="max-w-4xl mx-auto mt-10 px-4">
@@ -46,13 +51,13 @@
     </div>
   
     <!-- Ride Cards -->
-    {#if filteredRides.length > 0}
+    {#if rides.length > 0}
       <div class="grid gap-4">
-        {#each filteredRides as ride}
+        {#each rides as ride}
           <div class="p-4 border rounded-lg shadow-md bg-white hover:shadow-lg transition">
             <div class="flex justify-between items-center">
               <div>
-                <p class="text-lg font-semibold text-gray-700">{ride.start} → {ride.destination}</p>
+                <p class="text-lg font-semibold text-gray-700">{ride.StartPlace} → {ride.FinishPlace}</p>
                 <p class="text-sm text-gray-500">{ride.date} — {ride.seats} seat(s)</p>
               </div>
             </div>
