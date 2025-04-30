@@ -2,7 +2,7 @@
     let start = '';
     let destination = '';
     let date = '';
-    let seats = 1;
+    let seats = 0;
 
     const createRide = () => {
         console.log('Creating ride with:', { start, destination, date, seats });

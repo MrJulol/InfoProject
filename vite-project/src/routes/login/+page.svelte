@@ -1,31 +1,22 @@
 <script lang="ts">
+  import { user } from '$lib/stores/auth';
+
   let username = '';
   let password = '';
   let rePassword = '';
   let email = '';
-  let showModal = false; // State to control modal visibility
+  let showModal = false;
 
-  // Function to set a cookie
+  // Set a cookie
   function setCookie(name: string, value: string, days: number) {
-  const date = new Date();
-  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-  const expires = `expires=${date.toUTCString()}`;
-  const encodedValue = encodeURIComponent(value); // Encode the value to handle special characters
-  document.cookie = `${name}=${encodedValue}; ${expires}; path=/; Secure; SameSite=Strict`;
-}
-
-// Function to get a cookie
-function getCookie(name: string) {
-  const cookies = document.cookie.split(';');
-  for (let cookie of cookies) {
-    const [key, value] = cookie.trim().split('=');
-    if (key === name) {
-      return decodeURIComponent(value); // Decode the value to handle special characters
-    }
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    const expires = `expires=${date.toUTCString()}`;
+    const encodedValue = encodeURIComponent(value);
+    document.cookie = `${name}=${encodedValue}; ${expires}; path=/; Secure; SameSite=Strict`;
   }
-  return null;
-}
 
+  // Login
   async function login_click() {
     if (!username || !password) {
       console.error('Please fill in both fields.');
@@ -35,9 +26,7 @@ function getCookie(name: string) {
     try {
       const response = await fetch('http://localhost:3500/users/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
 
@@ -48,18 +37,14 @@ function getCookie(name: string) {
 
       const data = await response.json();
       console.log('Login successful:', data);
-
-      // Set a cookie with the token (or any other session data)
-      setCookie('authToken', data.token, 7); // Cookie expires in 7 days
+      setCookie('authToken', data.token, 7);
+      user.set({ token: data.token }); // ✅ Update store
     } catch (error) {
       console.error('Error during login:', error);
     }
   }
 
-  function showErrorPopup(message: string) {
-    alert(message); // Simple implementation using alert
-  }
-
+  // Registration
   async function register_click() {
     if (!username || !password || !email || password !== rePassword) {
       console.error('Please fill in all fields and ensure passwords match.');
@@ -67,48 +52,43 @@ function getCookie(name: string) {
     }
 
     try {
-      const response = await fetch('http:localhost:3500/users/register', {
+      const response = await fetch('http://localhost:3500/users/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password, email }),
       });
 
       if (!response.ok) {
         console.error('Registration failed:', response.statusText);
-        
-        showErrorPopup('Registration failed. Please try again.'); // Show error popup
         return;
       }
 
       const data = await response.json();
       console.log('Registration successful:', data);
-
-      // Set a cookie with the token (or any other session data)
-      setCookie('authToken', data.token, 7); // Cookie expires in 7 days
-
-      closeModal(); // Close the modal after successful registration
+      setCookie('authToken', data.token, 7);
+      user.set({ token: data.token }); // ✅ Update store
+      closeModal();
     } catch (error) {
       console.error('Error during registration:', error);
     }
   }
 
   function openModal() {
-    showModal = true; // Open the modal
+    showModal = true;
   }
 
   function closeModal() {
-    showModal = false; // Close the modal
+    showModal = false;
   }
 </script>
 
+<!-- Original CSS retained -->
 <style>
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif; /* Set a consistent font for all elements */
+    font-family: Arial, sans-serif;
   }
 
   .navbar {
@@ -117,7 +97,7 @@ function getCookie(name: string) {
     width: 100%;
     padding: 1rem;
     text-align: center;
-    font-size: 1.2rem; /* Optional: Adjust font size for the navbar */
+    font-size: 1.2rem;
   }
 
   .content {
@@ -172,7 +152,7 @@ function getCookie(name: string) {
     padding: 1rem;
     text-align: center;
     color: #666;
-    font-size: 0.9rem; /* Optional: Adjust font size for the footer */
+    font-size: 0.9rem;
   }
 
   /* Modal styles */
@@ -238,6 +218,7 @@ function getCookie(name: string) {
   }
 </style>
 
+<!-- Original Layout -->
 <div class="content">
   <div class="loginField">
     <h2>Login</h2>
