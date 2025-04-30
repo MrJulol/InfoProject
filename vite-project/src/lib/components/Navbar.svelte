@@ -38,7 +38,7 @@
         class="hover:text-yellow-300 transition-colors duration-200"
         class:selected={$page.url.pathname === '/create-ride' ? 'text-yellow-400 font-semibold' : ''}
       >
-        Fahrt Et
+        Fahrt Erstellen
       </a>
       <a
         href="/settings"
