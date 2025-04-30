@@ -57,8 +57,8 @@
           <div class="p-4 border rounded-lg shadow-md bg-white hover:shadow-lg transition">
             <div class="flex justify-between items-center">
               <div>
-                <p class="text-lg font-semibold text-gray-700">{ride.StartPlace} → {ride.FinishPlace}</p>
-                <p class="text-sm text-gray-500">{ride.date} — {ride.seats} seat(s)</p>
+                <p class="text-lg font-semibold text-gray-700">{ride.StartPlaceName} → {ride.FinishPlaceName}</p>
+                <p class="text-sm text-gray-500">{ride.date} — {ride.Seats} Plätze</p>
               </div>
             </div>
           </div>

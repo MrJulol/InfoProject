@@ -30,7 +30,7 @@ router.get("/open", async (req, res) => {
   try {
     connection = await pool.getConnection();
     const rows = await connection.query(
-      "SELECT * FROM t_rides WHERE status = 'open'"
+      "SELECT r.ID AS RideID, r.Start AS StartTime, p1.Name AS StartPlaceName, p2.Name AS FinishPlaceName, r.Seats FROM t_rides AS r JOIN t_places AS p1 ON r.StartPlace = p1.ID JOIN t_places AS p2 ON r.FinishPlace = p2.ID WHERE r.Status = 'open';"
     );
 
     res.json(rows);
