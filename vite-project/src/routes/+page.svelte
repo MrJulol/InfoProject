@@ -1,8 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-    // Simulated rides data (replace with backend call later)
-
     onMount(() => {
       fetchrides().then((data) => {
         rides = data;
@@ -24,11 +22,11 @@
     let filterStart = '';
     let filterDest = '';
   
-    // Reactive filtered rides
-    // $: filteredRides = rides.filter((ride) =>
-    //   ride.startPlace.toLowerCase().includes(filterStart.toLowerCase()) &&
-    //   ride.finishPlace.toLowerCase().includes(filterDest.toLowerCase())
-    // );
+    //Reactive filtered rides
+    $: filteredRides = rides.filter((ride) =>
+      ride.StartPlaceName.toLowerCase().includes(filterStart.toLowerCase()) &&
+      ride.FinishPlaceName.toLowerCase().includes(filterDest.toLowerCase())
+    );
   </script>
   
   <div class="max-w-4xl mx-auto mt-10 px-4">
@@ -51,9 +49,9 @@
     </div>
   
     <!-- Ride Cards -->
-    {#if rides.length > 0}
+    {#if filteredRides.length > 0}
       <div class="grid gap-4">
-        {#each rides as ride}
+        {#each filteredRides as ride}
           <div class="p-4 border rounded-lg shadow-md bg-white hover:shadow-lg transition">
             <div class="flex justify-between items-center">
               <div>

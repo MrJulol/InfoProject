@@ -30,9 +30,8 @@ router.get("/open", async (req, res) => {
   try {
     connection = await pool.getConnection();
     const rows = await connection.query(
-      "SELECT r.ID AS RideID, r.Start AS StartTime, p1.Name AS StartPlaceName, p2.Name AS FinishPlaceName, r.Seats FROM t_rides AS r JOIN t_places AS p1 ON r.StartPlace = p1.ID JOIN t_places AS p2 ON r.FinishPlace = p2.ID WHERE r.Status = 'open';"
+      "SELECT r.ID AS RideID, r.Start AS StartTime, p1.Name AS StartPlaceName, p2.Name AS FinishPlaceName, r.Seats, tu.Name as Driver FROM t_rides AS r JOIN t_places AS p1 ON r.StartPlace = p1.ID JOIN t_places AS p2 ON r.FinishPlace = p2.ID JOIN t_user AS tu ON r.Driver = tu.ID WHERE r.Status = 'open';"
     );
-
     res.json(rows);
   } catch (err) {
     console.error("Error fetching open rides:", err);
@@ -75,7 +74,7 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
   let connection;
   try {
     connection = await pool.getConnection();
-    const { startPlace, finishPlace, driver, start } = req.body;
+    const { startPlace, finishPlace, driver, start, seats } = req.body;
 
     const existingRides = await connection.query(
       "SELECT * FROM t_rides WHERE driver = ? AND status = 'open'",
@@ -117,8 +116,8 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
       )[0].id;
 
     const result = await connection.query(
-      "INSERT INTO t_rides (status, startPlace, finishPlace, start, driver) VALUES ( ?, ?, ?, ?, ?)",
-      ["open", startPlaceId, finishPlaceId, start, driver]
+      "INSERT INTO t_rides (status, startPlace, finishPlace, start, driver, seats) VALUES ( ?, ?, ?, ?, ?)",
+      ["open", startPlaceId, finishPlaceId, start, driver, seats]
     );
 
     res.status(201).json({
@@ -198,5 +197,6 @@ router.post("/finish", authenticate.authenticateUser, async (req, res) => {
     }
   }
 });
+
 
 module.exports = router;
