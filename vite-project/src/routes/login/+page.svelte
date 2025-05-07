@@ -37,7 +37,7 @@
 
       const data = await response.json();
       console.log('Login successful:', data);
-      setCookie('authToken', data.token, 7);
+      setCookie('token', data.token, 7);
       user.set({ token: data.token }); // ✅ Update store
     } catch (error) {
       console.error('Error during login:', error);
@@ -224,7 +224,7 @@
     <h2>Login</h2>
     <input id="username" type="text" placeholder="Username" bind:value={username} />
     <input id="password" type="password" placeholder="Password" bind:value={password} />
-    <button id="loginButton">Login</button>
+    <button id="loginButton" on:click={login_click}>Login</button>
     <p>or</p>
     <button id="registerButton" on:click={openModal}>Register</button>
   </div>
