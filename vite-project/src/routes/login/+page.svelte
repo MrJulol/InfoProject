@@ -224,7 +224,7 @@
     <h2>Login</h2>
     <input id="username" type="text" placeholder="Username" bind:value={username} />
     <input id="password" type="password" placeholder="Password" bind:value={password} />
-    <button id="loginButton" on:click={login_click}>Login</button>
+    <button id="loginButton">Login</button>
     <p>or</p>
     <button id="registerButton" on:click={openModal}>Register</button>
   </div>

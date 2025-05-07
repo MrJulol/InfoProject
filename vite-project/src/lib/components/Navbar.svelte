@@ -27,27 +27,22 @@
 
     <!-- Nav Links -->
     <div class="hidden md:flex space-x-6">
-      <a
-        href="/"
-        class:selected={$page.url.pathname === '/' ? 'text-yellow-400 font-semibold' : ''}
-        class="hover:text-yellow-300 transition-colors duration-200"
-      >
-        Home
-      </a>
-      <a
-        href="/ride/create"
-        class:selected={$page.url.pathname === '/ride/create' ? 'text-yellow-400 font-semibold' : ''}
-        class="hover:text-yellow-300 transition-colors duration-200"
-      >
-        Fahrt Et
-      </a>
-      <a
-        href="/settings"
-        class:selected={$page.url.pathname === '/settings' ? 'text-yellow-400 font-semibold' : ''}
-        class="hover:text-yellow-300 transition-colors duration-200"
-      >
-        Einstellungen
-      </a>
+      {#if $user?.token}
+        <a
+          href="/"
+          class:selected={$page.url.pathname === '/' ? 'text-yellow-400 font-semibold' : ''}
+          class="hover:text-yellow-300 transition-colors duration-200"
+        >
+          Home
+        </a>
+          <a
+            href="/ride/create"
+            class:selected={$page.url.pathname === '/ride/create' ? 'text-yellow-400 font-semibold' : ''}
+            class="hover:text-yellow-300 transition-colors duration-200"
+          >
+            Fahrt Erstellen
+          </a>
+        {/if}
     </div>
 
     <!-- User Icon -->
