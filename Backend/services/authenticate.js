@@ -3,8 +3,8 @@ const jwt = require("jsonwebtoken");
 const JWTKey = "WhatTheFluff";
 
 const authenticate = (req, res, next) => {
-  const token = req.cookies["token"];
-  console.log("Token from cookies:", token);
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
   }

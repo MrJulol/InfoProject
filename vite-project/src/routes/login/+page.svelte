@@ -13,7 +13,7 @@
     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
     const expires = `expires=${date.toUTCString()}`;
     const encodedValue = encodeURIComponent(value);
-    document.cookie = `${name}=${encodedValue}; ${expires}; path=/; Secure; SameSite=Strict`;
+    document.cookie = `${name}=${encodedValue}; ${expires}; Secure; SameSite=Strict`;
   }
 
   // Login
