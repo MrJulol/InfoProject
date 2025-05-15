@@ -115,6 +115,19 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
         ])
       )[0].id;
 
+    console.log(
+      "Start Place ID:",
+      startPlaceId,
+      "Finish Place ID:",
+      finishPlaceId,
+      "Driver ID:",
+      driverID,
+      "Start:",
+      start,
+      "Seats:",
+      seats
+    );
+
     const result = await connection.query(
       "INSERT INTO t_rides (status, startPlace, finishPlace, start, driver, seats) VALUES ( ?, ?, ?, ?, ?)",
       ["open", startPlaceId, finishPlaceId, start, driverID, seats]
