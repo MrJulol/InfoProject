@@ -1,5 +1,6 @@
 <script lang="ts">
   import { user } from '$lib/stores/auth';
+  import { goto } from '$app/navigation'; 
 
   let username = '';
   let password = '';
@@ -39,6 +40,7 @@
       console.log('Login successful:', data);
       setCookie('token', data.token, 7);
       user.set({ token: data.token }); // ✅ Update store
+      goto('/'); // Redirect to home page
     } catch (error) {
       console.error('Error during login:', error);
     }
@@ -67,6 +69,7 @@
       console.log('Registration successful:', data);
       setCookie('authToken', data.token, 7);
       user.set({ token: data.token }); // ✅ Update store
+      goto('/');
       closeModal();
     } catch (error) {
       console.error('Error during registration:', error);

@@ -8,6 +8,7 @@
         console.log('Creating ride with:', { start, destination, date, seats });
 
     };
+    
   </script>
   
   <div class="max-w-xl mx-auto mt-10 bg-white p-6 rounded-2xl shadow-lg">

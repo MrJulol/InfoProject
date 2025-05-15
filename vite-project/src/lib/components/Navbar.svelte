@@ -42,6 +42,14 @@
           >
             Fahrt Erstellen
           </a>
+          <a
+            href="/ride/booked"
+            class:selected={$page.url.pathname === '/ride/create' ? 'text-yellow-400 font-semibold' : ''}
+            class="hover:text-yellow-300 transition-colors duration-200"
+          >
+            Gebuchte Fahrten
+          </a>
+          
         {/if}
     </div>
 
