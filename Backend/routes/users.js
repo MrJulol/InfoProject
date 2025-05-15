@@ -126,6 +126,4 @@ router.post("/logout", authenticate.authenticateUser, (req, res) => {
   res.json({ message: "Logout successful" });
 });
 
-router.get("/tok")
-
 module.exports = router;

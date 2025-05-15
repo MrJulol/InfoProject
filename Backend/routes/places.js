@@ -30,17 +30,28 @@ router.post("/add", authenticate.authenticateUser, async (req, res) => {
   let connection;
   try {
     const { name } = req.body;
+
     connection = await pool.getConnection();
+
+    if (!name) {
+      return res.status(400).json({ error: "Name is required" });
+    }
+    const existingPlace = await connection.query(
+      "SELECT * FROM t_places WHERE name = ?",
+      [name]
+    );
+    if (existingPlace.length > 0) {
+      return res.status(400).json({ error: "Place already exists" });
+    }
+
     const result = await connection.query(
       "INSERT INTO t_places (name) VALUES (?)",
       [name]
     );
-    res
-      .status(201)
-      .json({
-        message: "Place created successfully",
-        id: Number(result.insertId),
-      });
+    res.status(201).json({
+      message: "Place created successfully",
+      id: Number(result.insertId),
+    });
   } catch (err) {
     console.error("Error creating place:", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -62,6 +73,27 @@ router.put("/update/:id", authenticate.authenticateUser, async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
     connection = await pool.getConnection();
+
+    if (!name) {
+      return res.status(400).json({ error: "Name is required" });
+    }
+    const existingPlace = await connection.query(
+      "SELECT * FROM t_places WHERE id = ?",
+      [id]
+    );
+    if (existingPlace.length === 0) {
+      return res.status(404).json({ error: "Place not found" });
+    }
+    const placeWithSameName = await connection.query(
+      "SELECT * FROM t_places WHERE name = ? AND id != ?",
+      [name, id]
+    );
+    if (placeWithSameName.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "Place with this name already exists" });
+    }
+
     await connection.query("UPDATE t_places SET name = ? WHERE id = ?", [
       name,
       id,

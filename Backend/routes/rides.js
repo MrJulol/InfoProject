@@ -3,35 +3,11 @@ var router = express.Router();
 const pool = require("../services/mariadb");
 const authenticate = require("../services/authenticate");
 
-/* GET rides listing. */
-router.get("/", authenticate.authenticateUser, async (req, res, next) => {
+router.get("/open", async (_, res) => {
   let connection;
   try {
     connection = await pool.getConnection();
-    const rows = await connection.query("SELECT * FROM t_rides");
-
-    res.json(rows);
-  } catch (err) {
-    console.error("Error fetching rides:", err);
-    res.status(500).json({ error: "Internal Server Error" });
-  } finally {
-    if (connection) {
-      try {
-        await connection.release();
-      } catch (err) {
-        console.error("Error releasing connection:", err);
-      }
-    }
-  }
-});
-
-router.get("/open", async (req, res) => {
-  let connection;
-  try {
-    connection = await pool.getConnection();
-    const rows = await connection.query(
-      "SELECT r.ID AS RideID, r.Start AS StartTime, p1.Name AS StartPlaceName, p2.Name AS FinishPlaceName, r.Seats, tu.Name as Driver FROM t_rides AS r JOIN t_places AS p1 ON r.StartPlace = p1.ID JOIN t_places AS p2 ON r.FinishPlace = p2.ID JOIN t_user AS tu ON r.Driver = tu.ID WHERE r.Status = 'open';"
-    );
+    const rows = await connection.query("SELECT * from v_openRides");
     res.json(rows);
   } catch (err) {
     console.error("Error fetching open rides:", err);
@@ -76,6 +52,36 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
     connection = await pool.getConnection();
     const { startPlace, finishPlace, driver, start, seats } = req.body;
 
+    if (!startPlace || !finishPlace || !driver || !start || !seats) {
+      return res.status(400).json({
+        error: "All fields are required",
+      });
+    }
+    if (seats <= 0) {
+      return res.status(400).json({
+        error: "Seats must be greater than 0",
+      });
+    }
+    if (new Date(start) < new Date()) {
+      return res.status(400).json({
+        error: "Start time must be in the future",
+      });
+    }
+    const existingDriver = await connection.query(
+      "SELECT * FROM t_user WHERE name = ?",
+      [driver]
+    );
+    if (existingDriver.length === 0) {
+      return res.status(400).json({
+        error: "Driver not found",
+      });
+    }
+    const driverID = existingDriver[0].id;
+    if (existingDriverId !== driver) {
+      return res.status(400).json({
+        error: "Driver ID does not match",
+      });
+    }
     const existingRides = await connection.query(
       "SELECT * FROM t_rides WHERE driver = ? AND status = 'open'",
       [driver]
@@ -85,7 +91,6 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
         error: "Driver already has an open ride",
       });
     }
-
     const existingStartPlace = await connection.query(
       "SELECT * FROM t_places WHERE name = ?",
       [startPlace]
@@ -117,7 +122,7 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
 
     const result = await connection.query(
       "INSERT INTO t_rides (status, startPlace, finishPlace, start, driver, seats) VALUES ( ?, ?, ?, ?, ?)",
-      ["open", startPlaceId, finishPlaceId, start, driver, seats]
+      ["open", startPlaceId, finishPlaceId, start, driverID, seats]
     );
 
     res.status(201).json({
@@ -143,6 +148,26 @@ router.put("/reopen", authenticate.authenticateUser, async (req, res) => {
   try {
     connection = await pool.getConnection();
     const { rideId } = req.body;
+
+    if (!rideId) {
+      return res.status(400).json({
+        error: "Ride ID is required",
+      });
+    }
+    const existingRide = await connection.query(
+      "SELECT * FROM t_rides WHERE id = ?",
+      [rideId]
+    );
+    if (existingRide.length === 0) {
+      return res.status(404).json({
+        error: "Ride not found",
+      });
+    }
+    if (existingRide[0].status !== "archived") {
+      return res.status(400).json({
+        error: "Ride is not archived",
+      });
+    }
 
     const result = await connection.query(
       "UPDATE t_rides SET status = ? WHERE id = ?",
@@ -174,6 +199,26 @@ router.post("/finish", authenticate.authenticateUser, async (req, res) => {
     connection = await pool.getConnection();
     const { rideId } = req.body;
 
+    if (!rideId) {
+      return res.status(400).json({
+        error: "Ride ID is required",
+      });
+    }
+    const existingRide = await connection.query(
+      "SELECT * FROM t_rides WHERE id = ?",
+      [rideId]
+    );
+    if (existingRide.length === 0) {
+      return res.status(404).json({
+        error: "Ride not found",
+      });
+    }
+    if (existingRide[0].status !== "open") {
+      return res.status(400).json({
+        error: "Ride is not open",
+      });
+    }
+
     const result = await connection.query(
       "UPDATE t_rides SET status = ?, end = ? WHERE ID = ?",
       ["archived", new Date(), rideId]
@@ -197,6 +242,5 @@ router.post("/finish", authenticate.authenticateUser, async (req, res) => {
     }
   }
 });
-
 
 module.exports = router;
