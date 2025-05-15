@@ -40,23 +40,30 @@
     border-radius: 8px;
     margin-bottom: 1rem;
     border: 1px solid #ddd;
+    text-align: center; /* Center text in booking cards */
   }
 
   .title {
     font-weight: bold;
     margin-bottom: 0.5rem;
     color: #333;
+    text-align: center; /* Center title text */
   }
 
   .info {
     color: #555;
+    text-align: center; /* Center info text */
+  }
+
+  .center {
+    text-align: center;
   }
 </style>
 
-<h1 class="text-2xl font-bold mb-4">Gebuchte Fahrten</h1>
+<h1 class="text-2xl font-bold mb-4 center">Gebuchte Fahrten</h1>
 
 {#if loading}
-  <p>Lade gebuchte Fahrten...</p>
+  <p class="center">Lade gebuchte Fahrten...</p>
 {:else if bookings.length > 0}
   {#each bookings as booking}
     <div class="booking-card">
@@ -66,5 +73,5 @@
     </div>
   {/each}
 {:else}
-  <p>Keine Fahrten gebucht.</p>
+  <p class="center">Keine Fahrten gebucht.</p>
 {/if}
