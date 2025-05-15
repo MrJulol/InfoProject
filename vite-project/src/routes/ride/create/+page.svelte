@@ -2,10 +2,10 @@
   import { user } from '$lib/stores/auth';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-
+  
+  let startPlace = '';
+  let finishPlace = '';
   let start = '';
-  let destination = '';
-  let date = '';
   let seats = 0;
 
   let error = '';
@@ -21,9 +21,9 @@
     }
 
     const rideData = {
+      startPlace,
+      finishPlace,
       start,
-      destination,
-      date,
       seats,
       driver: $user.username
     };
@@ -36,8 +36,9 @@
           Authorization: `Bearer ${$user.token}`
         },
         body: JSON.stringify(rideData)
-      });
 
+      });
+      console.log(rideData);
       if (!res.ok) {
         const message = await res.text();
         throw new Error(message || 'Fehler beim Erstellen der Fahrt');
@@ -70,17 +71,17 @@
   <form on:submit|preventDefault={createRide} class="space-y-4">
     <div>
       <label class="block text-sm font-medium text-gray-700">Beginn</label>
-      <input bind:value={start} type="text" required
+      <input bind:value={startPlace} type="text" required
         class="mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-yellow-400" />
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700">Ende</label>
-      <input bind:value={destination} type="text" required
+      <input bind:value={finishPlace} type="text" required
         class="mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-yellow-400" />
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700">Datum</label>
-      <input bind:value={date} type="date" required
+      <input bind:value={start} type="date" required
         class="mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-yellow-400" />
     </div>
     <div>

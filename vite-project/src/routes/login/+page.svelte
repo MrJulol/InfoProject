@@ -39,7 +39,7 @@
       const data = await response.json();
       console.log('Login successful:', data);
       setCookie('token', data.token, 7);
-      user.set({ token: data.token }); // ✅ Update store
+      user.set({ token: data.token, username: username }); // ✅ Update store
       goto('/'); // Redirect to home page
     } catch (error) {
       console.error('Error during login:', error);
@@ -68,7 +68,7 @@
       const data = await response.json();
       console.log('Registration successful:', data);
       setCookie('authToken', data.token, 7);
-      user.set({ token: data.token }); // ✅ Update store
+      user.set({ token: data.token, username: data.username }); // ✅ Update store
       goto('/');
       closeModal();
     } catch (error) {
