@@ -77,11 +77,6 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
       });
     }
     const driverID = existingDriver[0].id;
-    if (driverID !== driver) {
-      return res.status(400).json({
-        error: "Driver ID does not match",
-      });
-    }
     const existingRides = await connection.query(
       "SELECT * FROM t_rides WHERE driver = ? AND status = 'open'",
       [driver]
