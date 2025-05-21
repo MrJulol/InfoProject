@@ -4,7 +4,7 @@ const pool = require("../services/mariadb");
 const authenticate = require("../services/authenticate");
 
 router.post("book", authenticate.authenticateUser, async (req, res) => {
-  const { rideId, userId } = req.body;
+  const { rideId, userName } = req.body;
   let connection;
   try {
     connection = await pool.getConnection();
@@ -12,6 +12,18 @@ router.post("book", authenticate.authenticateUser, async (req, res) => {
       "SELECT * FROM t_rides WHERE id = ?",
       [rideId]
     );
+    if (!ride) {
+      return res.status(404).json({ error: "Ride not found" });
+    }
+    const user = await connection.query(
+      "SELECT ID FROM t_user WHERE name = ?",
+      [userName]
+    );
+    if (user.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const userId = userId[0].ID;
+    
 
     if (!ride) {
       return res.status(404).json({ error: "Ride not found" });
