@@ -53,6 +53,8 @@
   }
 
   async function bookRide() {
+    console.log("Booking ride:", selectedRide);
+    console.log("RideID:", selectedRide.RideID);
     if (selectedRide && $user?.token) {
       try {
         await fetch("http://localhost:3500/booking/book", {
@@ -62,8 +64,8 @@
             "Authorization": `Bearer ${$user.token}`
           },
           body: JSON.stringify({
-            rideId: selectedRide.id,
-            username: $user.username
+            rideId: selectedRide.RideID,
+            userName: $user.username
           })
         });
         // Optionally, show a success message or update UI

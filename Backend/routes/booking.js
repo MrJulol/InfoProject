@@ -4,7 +4,14 @@ const pool = require("../services/mariadb");
 const authenticate = require("../services/authenticate");
 
 router.post("/book", async (req, res) => {
+
+  console.log("Booking ride");
+
   const { rideId, userName } = req.body;
+  
+  console.log("Ride ID:", rideId);
+  console.log("User Name:", userName);
+
   let connection;
   try {
     connection = await pool.getConnection();
