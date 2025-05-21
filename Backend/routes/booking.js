@@ -83,11 +83,6 @@ router.post("/cancel", authenticate.authenticateUser, async (req, res) => {
     if (!ride) {
       return res.status(404).json({ error: "Ride not found" });
     }
-    if (ride[0].status !== "open") {
-      return res
-        .status(400)
-        .json({ error: "Ride is not available for cancellation" });
-    }
     const booking = await connection.query(
       "SELECT * FROM t_booking WHERE ride_id = ? AND user_id = ?",
       [rideId, userId]
@@ -135,10 +130,9 @@ router.get("/userBookings", authenticate.authenticateUser, async (req, res) => {
     }
     const userId = user[0].ID;
 
-    const bookings = await connection.query(
-      "SELECT * FROM v_userRides",
-      [userId]
-    );
+    const bookings = await connection.query("SELECT * FROM v_userRides", [
+      userId,
+    ]);
 
     res.json(bookings);
   } catch (err) {
