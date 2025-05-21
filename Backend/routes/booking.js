@@ -63,13 +63,42 @@ router.post("/book", async (req, res) => {
   }
 });
 router.post("/cancel", authenticate.authenticateUser, async (req, res) => {
-  const { bookingId } = req.body;
+  const { rideId, userName } = req.body;
   let connection;
   try {
     connection = await pool.getConnection();
+
+    const user = await connection.query(
+      "SELECT ID FROM t_user WHERE name = ?",
+      [userName]
+    );
+    if (user.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const userId = user[0].ID;
+
+    const ride = await connection.query("SELECT * FROM t_rides WHERE id = ?", [
+      rideId,
+    ]);
+    if (!ride) {
+      return res.status(404).json({ error: "Ride not found" });
+    }
+    if (ride[0].status !== "open") {
+      return res
+        .status(400)
+        .json({ error: "Ride is not available for cancellation" });
+    }
+    const booking = await connection.query(
+      "SELECT * FROM t_booking WHERE ride_id = ? AND user_id = ?",
+      [rideId, userId]
+    );
+    if (booking.length === 0) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
     const result = await connection.query(
-      "DELETE FROM t_booking WHERE id = ?",
-      [bookingId]
+      "DELETE FROM t_booking WHERE ride_id = ? AND user_id = ?",
+      [rideId, userId]
     );
 
     if (result.affectedRows === 0) {
