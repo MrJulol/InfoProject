@@ -76,7 +76,7 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
         error: "Driver not found",
       });
     }
-    const driverID = existingDriver[0].id;
+    const driverID = existingDriver[0].ID;
     const existingRides = await connection.query(
       "SELECT * FROM t_rides WHERE driver = ? AND status = 'open'",
       [driver]
@@ -129,7 +129,7 @@ router.post("/create", authenticate.authenticateUser, async (req, res) => {
     );
 
     const result = await connection.query(
-      "INSERT INTO t_rides (status, startPlace, finishPlace, start, driver, seats) VALUES ( ?, ?, ?, ?, ?)",
+      "INSERT INTO t_rides (status, startPlace, finishPlace, start, driver, seats) VALUES ( ?, ?, ?, ?, ?, ?)",
       ["open", startPlaceId, finishPlaceId, start, driverID, seats]
     );
 
