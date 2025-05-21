@@ -3,7 +3,7 @@ var router = express.Router();
 const pool = require("../services/mariadb");
 const authenticate = require("../services/authenticate");
 
-router.post("/book", authenticate.authenticateUser, async (req, res) => {
+router.post("/book", async (req, res) => {
   const { rideId, userName } = req.body;
   let connection;
   try {
@@ -22,8 +22,7 @@ router.post("/book", authenticate.authenticateUser, async (req, res) => {
     if (user.length === 0) {
       return res.status(404).json({ error: "User not found" });
     }
-    const userId = userId[0].ID;
-    
+    const userId = user[0].ID;
 
     if (!ride) {
       return res.status(404).json({ error: "Ride not found" });
@@ -42,7 +41,7 @@ router.post("/book", authenticate.authenticateUser, async (req, res) => {
 
     res.json({
       message: "Ride booked successfully",
-      bookingId: result.insertId,
+      bookingId: Number(result.insertId),
     });
   } catch (err) {
     console.error("Error booking ride:", err);
