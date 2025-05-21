@@ -25,6 +25,8 @@
       if (!res.ok) throw new Error('Fehler beim Laden der Buchungen');
 
       bookings = await res.json();
+
+
       console.log('Fetched bookings:', bookings);
     } catch (err) {
       console.error(err);
@@ -33,46 +35,83 @@
       loading = false;
     }
   });
+
+   async function cancelRide() {
+    if (bookings && $user?.token) {
+      try {
+        await fetch("http://localhost:3500/booking/book", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${$user.token}`
+          },
+          body: JSON.stringify({
+            rideId: bookings.RideID,
+            userName: $user.username
+          })
+        });
+        // Optionally, show a success message or update UI
+      } catch (err) {
+        console.error("Error booking ride:", err);
+        // Optionally, show an error message
+      }
+    }
+    closeModal();
+  }
 </script>
 
 <style>
   .booking-card {
-    background: #f9f9f9;
-    padding: 1rem;
+    background-color: white;
+    padding: 2rem;
     border-radius: 8px;
-    margin-bottom: 1rem;
-    border: 1px solid #ddd;
-    text-align: center; /* Center text in booking cards */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin: 1rem auto;
+    text-align: center;
   }
 
   .title {
     font-weight: bold;
+    font-size: 1.2rem;
     margin-bottom: 0.5rem;
     color: #333;
-    text-align: center; /* Center title text */
   }
 
   .info {
+    font-size: 1rem;
     color: #555;
-    text-align: center; /* Center info text */
+    margin-bottom: 0.5rem;
   }
 
   .center {
     text-align: center;
   }
+
+  .booking-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 2rem;
+  }
 </style>
 
-<h1 class="text-2xl font-bold mb-4 center">Gebuchte Fahrten</h1>
+<div class="booking-container">
+  <h1 class="title">Gebuchte Fahrten</h1>
 
-{#if loading}
-  <p class="center">Lade gebuchte Fahrten...</p>
-{:else if bookings.length > 0}
+  {#if loading}
+    <p class="info">Lade gebuchte Fahrten...</p>
+  {:else if bookings.length > 0}
   {#each bookings as booking}
     <div class="booking-card">
-      <div class="info">Von: {booking.ride?.StartPlaceName} → Nach: {booking.ride?.FinishPlaceName}</div>
-      <div class="info">Datum: {booking.ride?.StartTime}</div>
+      <div class="info">Von: {booking.StartPlaceName}</div>
+      <div class="info">Nach: {booking.FinishPlaceName}</div>
+      <div class="info">Datum: {new Date(booking.start).toLocaleString()}</div>
+      <div class="info">Fahrer: {booking.Driver}</div>
     </div>
   {/each}
-{:else}
-  <p class="center">Keine Fahrten gebucht.</p>
-{/if}
+  {:else}
+    <p class="info">Keine Fahrten gebucht.</p>
+  {/if}
+</div>

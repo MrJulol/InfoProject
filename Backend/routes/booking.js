@@ -107,7 +107,7 @@ router.get("/userBookings", authenticate.authenticateUser, async (req, res) => {
     const userId = user[0].ID;
 
     const bookings = await connection.query(
-      "SELECT * FROM t_booking WHERE user_id = ?",
+      "SELECT * FROM v_userRides",
       [userId]
     );
 
