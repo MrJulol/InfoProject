@@ -36,17 +36,39 @@
     }
   });
 
-   async function cancelRide() {
-    if (bookings && $user?.token) {
+  let showLoginModal = false;
+
+  function openModal(ride: any) {
+    if ($user?.token) {
+      // User is logged in
+      bookings = ride;
+    } else {
+      // User is not logged in
+      showLoginModal = true;
+    }
+  }
+
+  function closeModal() {
+    bookings = [];
+  }
+ 
+  function closeLoginModal() {
+    showLoginModal = false;
+  }
+
+
+   async function cancelRide(booking: any) {
+
+    if (booking && $user?.token) {
       try {
-        await fetch("http://localhost:3500/booking/book", {
+        await fetch("http://localhost:3500/booking/cancel", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${$user.token}`
           },
           body: JSON.stringify({
-            rideId: bookings.RideID,
+            rideId: booking.RideID,
             userName: $user.username
           })
         });
@@ -109,6 +131,7 @@
       <div class="info">Nach: {booking.FinishPlaceName}</div>
       <div class="info">Datum: {new Date(booking.start).toLocaleString()}</div>
       <div class="info">Fahrer: {booking.Driver}</div>
+      <button on:click={() => cancelRide(booking)}>Fahrt stornieren</button>
     </div>
   {/each}
   {:else}
