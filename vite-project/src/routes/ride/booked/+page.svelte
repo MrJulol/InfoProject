@@ -15,19 +15,17 @@
     }
 
     try {
-      const res = await fetch('http://localhost:3500/booking/userBookings', {
+      console.log('Fetching bookings for user:', $user.username);
+      const res = await fetch('http://localhost:3500/booking/userBookings?userName='+$user.username, {
         headers: {
           Authorization: `Bearer ${token}`
         },
-
-        body: JSON.stringify({
-            userName: $user.username
-          })
       });
 
       if (!res.ok) throw new Error('Fehler beim Laden der Buchungen');
 
       bookings = await res.json();
+      console.log('Fetched bookings:', bookings);
     } catch (err) {
       console.error(err);
       goto('/login');
@@ -71,9 +69,8 @@
 {:else if bookings.length > 0}
   {#each bookings as booking}
     <div class="booking-card">
-      <div class="title">{booking.ride?.title}</div>
-      <div class="info">Von: {booking.ride?.start} → Nach: {booking.ride?.dest}</div>
-      <div class="info">Datum: {booking.ride?.date}</div>
+      <div class="info">Von: {booking.ride?.StartPlaceName} → Nach: {booking.ride?.FinishPlaceName}</div>
+      <div class="info">Datum: {booking.ride?.StartTime}</div>
     </div>
   {/each}
 {:else}
