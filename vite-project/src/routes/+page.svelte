@@ -53,8 +53,7 @@
   }
 
   async function bookRide() {
-    console.log("Booking ride:", selectedRide);
-    console.log("RideID:", selectedRide.RideID);
+
     if (selectedRide && $user?.token) {
       try {
         await fetch("http://localhost:3500/booking/book", {
