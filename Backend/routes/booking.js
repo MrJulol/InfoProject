@@ -3,7 +3,7 @@ var router = express.Router();
 const pool = require("../services/mariadb");
 const authenticate = require("../services/authenticate");
 
-router.post("book", authenticate.authenticateUser, async (req, res) => {
+router.post("/book", authenticate.authenticateUser, async (req, res) => {
   const { rideId, userName } = req.body;
   let connection;
   try {

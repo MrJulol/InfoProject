@@ -55,7 +55,7 @@
   async function bookRide() {
     if (selectedRide && $user?.token) {
       try {
-        await fetch("http://localhost:3500/bookings/book", {
+        await fetch("http://localhost:3500/booking/book", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
