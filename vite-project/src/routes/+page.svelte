@@ -52,9 +52,26 @@
     showLoginModal = false;
   }
 
-  function bookRide() {
-    console.log("Booking ride:", selectedRide);
-    // Add booking logic here
+  async function bookRide() {
+    if (selectedRide && $user?.token) {
+      try {
+        await fetch("http://localhost:3500/bookings/book", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${$user.token}`
+          },
+          body: JSON.stringify({
+            rideId: selectedRide.id,
+            username: $user.username
+          })
+        });
+        // Optionally, show a success message or update UI
+      } catch (err) {
+        console.error("Error booking ride:", err);
+        // Optionally, show an error message
+      }
+    }
     closeModal();
   }
 </script>
