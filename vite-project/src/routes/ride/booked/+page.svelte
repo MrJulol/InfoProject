@@ -18,7 +18,11 @@
       const res = await fetch('http://localhost:3500/booking/userBookings', {
         headers: {
           Authorization: `Bearer ${token}`
-        }
+        },
+
+        body: JSON.stringify({
+            userName: $user.username
+          })
       });
 
       if (!res.ok) throw new Error('Fehler beim Laden der Buchungen');
