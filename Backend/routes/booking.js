@@ -49,7 +49,7 @@ router.post("/book", async (req, res) => {
         .status(400)
         .json({ error: "No available seats for this ride" });
     }
-    const updatedSeats = seatRemove[0].available_seats - 1;
+    const updatedSeats = seatRemove[0].seats - 1;
     await connection.query("UPDATE t_rides SET seats = ? WHERE id = ?", [
       updatedSeats,
       rideId,
@@ -105,6 +105,16 @@ router.post("/cancel", authenticate.authenticateUser, async (req, res) => {
     if (booking.length === 0) {
       return res.status(404).json({ error: "Booking not found" });
     }
+
+    const seatAdd = await connection.query(
+      "SELECT seats FROM t_rides WHERE id = ?",
+      [rideId]
+    );
+    const updatedSeats = seatAdd[0].available_seats + 1;
+    await connection.query("UPDATE t_rides SET seats = ? WHERE id = ?", [
+      updatedSeats,
+      rideId,
+    ]);
 
     const result = await connection.query(
       "DELETE FROM t_booking WHERE ride_id = ? AND user_id = ?",
