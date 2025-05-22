@@ -84,6 +84,7 @@
       <input bind:value={start} type="date" required
         class="mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-yellow-400" />
     </div>
+
     <div>
       <label class="block text-sm font-medium text-gray-700">Freie Plätze</label>
       <input bind:value={seats} type="number" min="1" required

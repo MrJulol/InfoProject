@@ -6,19 +6,12 @@
   let bookings: any[] = [];
   let loading = true;
 
-  onMount(async () => {
-    const token = $user?.token;
-
-    if (!token) {
-      goto('/login');
-      return;
-    }
-
+  let fetchBookings = async (user: any) => {
     try {
-      console.log('Fetching bookings for user:', $user.username);
-      const res = await fetch('http://localhost:3500/booking/userBookings?userName='+$user.username, {
+      console.log('Fetching bookings for user:', user.username);
+      const res = await fetch('http://localhost:3500/booking/userBookings?userName='+user.username, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${user.token}`
         },
       });
 
@@ -34,6 +27,19 @@
     } finally {
       loading = false;
     }
+  }
+
+
+  onMount(async () => {
+    const token = $user?.token;
+
+    if (!token) {
+      goto('/login');
+      return;
+    }
+
+    await fetchBookings($user);
+    
   });
 
   let showLoginModal = false;
@@ -49,7 +55,7 @@
   }
 
   function closeModal() {
-    bookings = [];
+
   }
  
   function closeLoginModal() {
@@ -75,6 +81,7 @@
       } catch (err) {
         console.error("Error booking ride:", err);
       }
+      await fetchBookings($user);
     }
     closeModal();
   }
