@@ -65,9 +65,6 @@ router.post("/book", async (req, res) => {
 router.post("/cancel", authenticate.authenticateUser, async (req, res) => {
   const { rideId, userName } = req.body;
   let connection;
-  console.log("Cancelling booking");
-  console.log("Ride ID:", rideId);
-  console.log("User Name:", userName);
   try {
     connection = await pool.getConnection();
 
