@@ -58,7 +58,7 @@
 
 
    async function cancelRide(booking: any) {
-
+    console.log("Canceling ride:", booking.ID);
     if (booking && $user?.token) {
       try {
         await fetch("http://localhost:3500/booking/cancel", {
@@ -68,14 +68,12 @@
             "Authorization": `Bearer ${$user.token}`
           },
           body: JSON.stringify({
-            rideId: booking.RideID,
+            rideId: booking.ID,
             userName: $user.username
           })
         });
-        // Optionally, show a success message or update UI
       } catch (err) {
         console.error("Error booking ride:", err);
-        // Optionally, show an error message
       }
     }
     closeModal();
@@ -131,7 +129,7 @@
       <div class="info">Nach: {booking.FinishPlaceName}</div>
       <div class="info">Datum: {new Date(booking.start).toLocaleString()}</div>
       <div class="info">Fahrer: {booking.Driver}</div>
-      <button on:click={() => cancelRide(booking)}>Fahrt stornieren</button>
+      <button class="px-4 py-2 bg-yellow-400 text-white rounded hover:bg-yellow-500" on:click={() => cancelRide(booking)}>Fahrt stornieren</button>
     </div>
   {/each}
   {:else}
