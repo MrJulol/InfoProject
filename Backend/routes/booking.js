@@ -40,6 +40,21 @@ router.post("/book", async (req, res) => {
         .json({ error: "Ride is not available for booking" });
     }
 
+    const seatRemove = await connection.query(
+      "SELECT seats FROM t_rides WHERE id = ?",
+      [rideId]
+    );
+    if (seatRemove[0].seats <= 0) {
+      return res
+        .status(400)
+        .json({ error: "No available seats for this ride" });
+    }
+    const updatedSeats = seatRemove[0].available_seats - 1;
+    await connection.query("UPDATE t_rides SET seats = ? WHERE id = ?", [
+      updatedSeats,
+      rideId,
+    ]);
+
     const result = await connection.query(
       "INSERT INTO t_booking (user_id, ride_id) VALUES (?, ?)",
       [userId, rideId]
